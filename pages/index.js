@@ -6,6 +6,7 @@ import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 
 const connection = new Connection(clusterApiUrl('mainnet-beta'));
 const mx = Metaplex.make(connection);
+const publicKey = 'Geh5Ss5knQGym81toYGXDbH3MFU2JCMK7E4QyeBHor1b';
 
 const Home = () => {
   const [address, setAddress] = useState(
@@ -19,23 +20,38 @@ const Home = () => {
   const perPage = 1;
 
   const fetchNFTs = async () => {
-    // add some code here
-  };
+    const myNfts = await Metaplex.nfts().findAllByOwner(Metaplex.identity().publicKey);
+  2322};
 
   useEffect(() => {
     if (!nftList) {
       return;
     }
-
-    // add some code here
+const execute = async()=>{
+  const startIndex = (currentPage -1) * perPage;
+  const endIndex = currentPage*perPage;
+  await loadData(startIndex,endIndex);
+  setCurrentView(nftList.slice(startIndex,endIndex));
+  setLoading(false);
+};
+    execute();
   }, [nftList, currentPage]);
 
   const loadData = async (startIndex, endIndex) => {
-    // add some code here
+
+    // const nftsToLoad = nftList.filter((nft,index)=>{
+    //   return{
+    //     index >= startIndex && index < endIndex;
+    //   }
+    // })
+
+    const promises = nftsToLoad.map((nft)=>nft.metadataTask.run());
+    await Promise.all(promises);
   };
 
   const changeCurrentPage = (operation) => {
-    // add some code here
+    if(operation === 'next') setCurrentPage((prevValue) => prevValue + 1);
+    else setCurrentPage((prevValue) => prevValue - 1);
   };
 
   return (
@@ -83,9 +99,7 @@ const Home = () => {
                 Prev Page
               </button>
               <button
-                disabled={
-                  nftList && Math.ceil(nftList.length / perPage) === currentPage
-                }
+                disabled={nftList && Math.ceil(nftList.length / perPage) === currentPage}
                 className={styles.styledButton}
                 onClick={() => changeCurrentPage('next')}
               >
@@ -97,6 +111,6 @@ const Home = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Home;
